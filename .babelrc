@@ -1,0 +1,30 @@
+{
+  "presets": [
+    [
+      "@babel/env"
+    ]
+  ],
+  "plugins": [
+    "@babel/syntax-dynamic-import",
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "helpers": true,
+        "regenerator": false
+      }
+    ]
+  ],
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "@babel/env",
+          {
+            "useBuiltIns": "entry",
+            "modules": "commonjs"
+          }
+        ]
+      ]
+    }
+  }
+}

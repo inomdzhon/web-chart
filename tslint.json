@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "tslint-config-airbnb",
+    "tslint-react",
+    "tslint-config-prettier"
+  ],
+  "rules": {
+    "no-parameter-reassignment": false,
+    "variable-name": false,
+    "import-name": false,
+    "no-this-assignment": false,
+    "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+    "typedef": [true, "call-signature", "parameter", "property-declaration", "member-variable-declaration"]
+  }
+}
