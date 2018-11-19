@@ -1,5 +1,5 @@
 // core
-import { Platform, Chart } from "./core";
+import { Chart } from "./core";
 
 // mock
 import { Point } from "./Point";
@@ -15,24 +15,20 @@ export class Application {
     if (!canvas) {
       return;
     }
-    const context = canvas.getContext("2d");
-    if (!context) {
-      return;
-    }
 
     setTimeout(() => {
-      this.chartInit(context);
+      this.chartInit(canvas);
     }, 200);
   }
 
-  chartInit(context: CanvasRenderingContext2D): void {
+  chartInit(canvas: HTMLCanvasElement): void {
     const app = document.querySelector(".app");
     if (!app) {
       return;
     }
     const { clientWidth: width, clientHeight: height } = app;
     const point = new Point();
-    const chart = new Chart(new Platform(context));
+    const chart = new Chart(canvas);
 
     chart.setSize(width, height);
 

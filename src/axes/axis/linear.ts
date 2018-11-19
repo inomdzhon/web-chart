@@ -1,5 +1,5 @@
 import { ScaleType } from "./typing/types";
-import { niceNumber } from "./utils";
+import { niceNumber } from "../utils";
 
 export function linear(
   domain: [number, number],

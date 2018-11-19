@@ -1,4 +1,4 @@
 // types
 export * from './typing/types';
 
-export { linear } from './linear';
+export { Platform } from "./Platform";

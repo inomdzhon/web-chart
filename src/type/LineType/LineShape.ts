@@ -1,36 +1,22 @@
-type PointType = {
-  x: number;
-  y: number;
-};
+// core
+import { Shape } from "layer";
 
-export type OptionsType = {
-  width: number;
-  color: string;
-  cap?: "butt" | "round" | "square";
-  dash?: number[];
-};
+// typing
+import { PointType, LineShapeOptionsType, LineShapeAttributesType } from "./typing/types";
 
-export class Line {
-  private options: OptionsType = {
+export class LineShape extends Shape<LineShapeAttributesType> {
+  private options: LineShapeOptionsType = {
     width: 2,
-    color: "#000",
+    color: "rgba(76,117,163 ,1 )",
   };
-  private ctxOptions?: OptionsType;
 
-  private from: PointType = { x: 0, y: 0 };
-  private to: PointType = { x: 0, y: 0 };
+  private ctxOptions?: LineShapeOptionsType;
 
-  constructor(
-    private id: string,
-    private ctx: CanvasRenderingContext2D,
-    options?: Partial<OptionsType>,
-  ) {
-    if (options) {
-      this.setOptions(options);
-    }
+  constructor(attrs: LineShapeAttributesType, private ctx: CanvasRenderingContext2D) {
+    super(attrs);
   }
 
-  setOptions(options: Partial<OptionsType>): void {
+  setOptions(options: Partial<LineShapeOptionsType>): void {
     this.options = {
       ...this.options,
       ...options,
@@ -38,28 +24,31 @@ export class Line {
   }
 
   setPosition(from: PointType, to: PointType): void {
-    this.from = from;
-    this.to = to;
+    this.attributes.from = from;
+    this.attributes.to = to;
   }
+
+  destroy(): void {}
+
+  transition(): void {}
 
   draw(): void {
     this.saveContextOptions();
     this.ctx.beginPath();
     this.ctx.strokeStyle = this.options.color;
     this.ctx.lineWidth = this.options.width;
-    this.ctx.moveTo(this.from.x, this.from.y);
-    this.ctx.lineTo(this.to.x, this.to.y);
+    this.ctx.moveTo(this.attributes.from.x, this.attributes.from.y);
+    this.ctx.lineTo(this.attributes.to.x, this.attributes.to.y);
     this.ctx.stroke();
     this.restoreContextOptions();
   }
-
 
   private saveContextOptions(): void {
     // @ts-ignore
     this.storedOptions = {
       color: this.ctx.strokeStyle,
       width: this.ctx.lineWidth,
-    }
+    };
   }
 
   private restoreContextOptions(): void {

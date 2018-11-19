@@ -1,69 +1,34 @@
-import { Platform } from "./Platform";
-import { Axes } from "./Axes";
-import { linear } from "../scale";
+import { Platform, PointType } from "platform";
+import { ViewArea } from "./ViewArea";
 
-// shapes
-import { Line } from 'shapes';
+// core
+import { Axes } from "axes";
 
-// types
-import { ViewPortType, PointType, AxisType } from "./typing/types";
-
-// utils
-import { extent, now, ts } from "utils";
+import { LineType } from "type/LineType";
 
 export class Chart {
+  private readonly platform: Platform;
+  private readonly axes: Axes;
+
   private points: PointType[] = [];
   private visiblePoints: PointType[] = [];
-  private axes: Axes;
+  private viewArea: ViewArea = new ViewArea();
+  private type: LineType;
 
-  // zoom in milliseconds
-  private zoom: number = 1000 * 60 * 2;
-
-  private xAxis: AxisType = {
-    domain: [0, 0],
-    range: [0, 0],
-    scale: linear([0, 0], [0, 0]),
-  };
-
-  private yAxis: AxisType = {
-    domain: [0, 0],
-    range: [0, 0],
-    scale: linear([0, 0], [0, 0]),
-  };
-
-  private viewPort: ViewPortType = {
-    width: 390,
-    height: 240,
-    content: {
-      width: 300,
-      height: 150,
-      margin: {
-        top: 20,
-        left: 20,
-        bottom: 20,
-        right: 20,
-      },
-    },
-    scales: {
-      xScale: {
-        height: 50,
-      },
-      yScale: {
-        width: 50,
-      },
-    },
-  };
-
-  private lineCollection: Line[] = [];
-
-  constructor(private platform: Platform) {
-    this.axes = new Axes(platform);
-    this.handleZoom = this.handleZoom.bind(this);
+  constructor(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("canvas context not found");
+    }
+    this.platform = new Platform(ctx);
+    this.axes = new Axes(canvas, this.platform, this.viewArea);
+    // type
+    this.type = new LineType(ctx);
   }
 
   setSize(width: number, height: number): void {
     this.platform.setSize(width, height);
-    this.updateViewPort(width, height);
+    this.viewArea.update(width, height);
     if (this.visiblePoints.length !== 0) {
       this.draw();
     }
@@ -71,28 +36,19 @@ export class Chart {
 
   setPoints(points: PointType[]): void {
     this.points = points;
-    this.updateXAxis();
-    this.visiblePoints = points.filter(
-      point =>
-        point.x <= this.xAxis.domain[1] && point.x > this.xAxis.domain[0],
-    );
-    this.updateYAxis(this.visiblePoints);
   }
 
   addPoint(point: PointType): void {
     const lastPoint = this.points[this.points.length - 1];
     if (lastPoint.x !== point.x) {
-      this.setPoints([...this.points, point]);
+      this.points.push(point);
     }
   }
 
   update(): void {
-    this.updateXAxis();
+    this.updateVisiblePoints();
+    this.axes.updateAxis(this.visiblePoints);
     this.draw();
-  }
-
-  handleZoom(): void {
-
   }
 
   private draw(): void {
@@ -100,48 +56,22 @@ export class Chart {
 
     // scale points to range
     const scaledPoints = this.visiblePoints.map(point => ({
-      y: this.yAxis.scale.invert(point.y),
-      x: this.xAxis.scale.scale(point.x),
+      y: this.axes.yAxis.scale.invert(point.y),
+      x: this.axes.xAxis.scale.scale(point.x),
     }));
 
-    this.platform.lineByPoints(scaledPoints, {
-      width: 2,
-      color: "rgba(76,117,163 ,1 )",
-    });
+    // test
+    this.type.setPoints(scaledPoints);
 
     // yScale
-    this.axes.draw(this.viewPort, this.yAxis.scale, this.xAxis.scale);
+    this.axes.draw();
   }
 
-  private updateXAxis(): void {
-    const nowMilliseconds = now();
-    this.xAxis.domain = [nowMilliseconds - this.zoom, nowMilliseconds];
-    this.xAxis.range = [
-      this.viewPort.content.margin.left,
-      this.viewPort.content.width + this.viewPort.content.margin.left,
-    ];
-    this.xAxis.scale = linear(this.xAxis.domain, this.xAxis.range);
-  }
-
-  private updateYAxis(points: PointType[]): void {
-    this.yAxis.domain = extent(points, point => point.y);
-    this.yAxis.range = [
-      this.viewPort.content.margin.top,
-      this.viewPort.content.height + this.viewPort.content.margin.top,
-    ];
-    this.yAxis.scale = linear(this.yAxis.domain, this.yAxis.range);
-  }
-
-  private updateViewPort(width: number, height: number): void {
-    const { content, scales } = this.viewPort;
-    this.viewPort.width = width;
-    this.viewPort.height = height;
-    this.viewPort.content.width =
-      width - scales.yScale.width - content.margin.left - content.margin.right;
-    this.viewPort.content.height =
-      height -
-      scales.xScale.height -
-      content.margin.top -
-      content.margin.bottom;
+  private updateVisiblePoints(): void {
+    this.visiblePoints = this.points.filter(
+      point =>
+        point.x <= this.axes.xAxis.domain[1] &&
+        point.x >= this.axes.xAxis.domain[0],
+    );
   }
 }

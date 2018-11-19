@@ -2,7 +2,7 @@
 import { PointType, LineOptionsType } from "./typing/types";
 
 export class Platform {
-  constructor(private ctx: CanvasRenderingContext2D) {
+  constructor(public ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
     ctx.lineJoin = "round";
@@ -36,7 +36,10 @@ export class Platform {
     }
   }
 
-  lineByPoints(points: PointType[], options: LineOptionsType = { width: 2, color: "#000" }): void {
+  lineByPoints(
+    points: PointType[],
+    options: LineOptionsType = { width: 2, color: "#000" },
+  ): void {
     let lastY = 0;
     let lastX = 0;
 
@@ -74,10 +77,6 @@ export class Platform {
     this.ctx.fillText(text.toString(), x, y);
     this.ctx.font = prevFont;
     this.ctx.fillStyle = prevFill;
-  }
-
-  measureText(text: string): any {
-    return this.ctx.measureText(text);
   }
 
   clear(): void {
