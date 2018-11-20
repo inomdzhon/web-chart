@@ -1,5 +1,6 @@
 import { Platform, PointType } from "platform";
 import { ViewArea } from "./ViewArea";
+import { throttle } from "utils";
 
 // core
 import { Axes } from "axes";
@@ -24,6 +25,7 @@ export class Chart {
     this.axes = new Axes(canvas, this.platform, this.viewArea);
     // type
     this.type = new LineType(ctx, this.axes.xAxis, this.axes.yAxis);
+    this.updateVisiblePoints = throttle(this.updateVisiblePoints, 500, this);
   }
 
   setSize(width: number, height: number): void {
@@ -70,5 +72,6 @@ export class Chart {
         point.x <= this.axes.xAxis.domain[1] &&
         point.x >= this.axes.xAxis.domain[0],
     );
+
   }
 }
