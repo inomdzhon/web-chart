@@ -4,6 +4,7 @@ import {
   AxisTypeType,
   ScaleType,
   OptionsType,
+  LastDrawedType,
 } from "./typing/types";
 import { Platform } from "platform";
 
@@ -26,6 +27,8 @@ export class Axis {
       color: "rgba(255, 255, 255, 0.1)",
     },
   };
+
+  private lastDrawed?: LastDrawedType;
 
   constructor(
     private type: AxisTypeType,
@@ -109,6 +112,23 @@ export class Axis {
         }
       }
     }
+    this.lastDrawed = {
+      domain: [...this.domain] as [number, number],
+      range: [...this.range] as [number, number],
+    };
+  }
+
+  private needReDraw(): boolean {
+    if (!this.lastDrawed) {
+      return true;
+    }
+
+    return (
+      this.domain[0] !== this.lastDrawed.domain[0] ||
+      this.domain[1] !== this.lastDrawed.domain[1] ||
+      this.range[0] !== this.lastDrawed.range[0] ||
+      this.range[1] !== this.lastDrawed.range[1]
+    );
   }
 
   private formatTime(date: Date): string {

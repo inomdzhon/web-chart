@@ -1,34 +1,21 @@
-import { RawPointType, PointType } from "./typing/types";
-
-import { Axis } from "axes";
+// types
+import { PointType } from "./typing/types";
 
 export class Storage {
   points: PointType[] = [];
-  visiblePoints: PointType[] = [];
+  lastPoint?: PointType;
 
-  constructor(private xAxis: Axis, private yAxis: Axis) {}
-
-  setPoints(points: RawPointType[]): void {
-    this.points = points.map(this.prepare);
-  }
-
-  addPoint(point: RawPointType): void {
-    const lastPoint = this.points[this.points.length - 1];
-    if (lastPoint.values.x !== point.x) {
-      this.points.push(this.prepare(point));
+  setPoints(points: PointType[]): void {
+    this.points = points;
+    if (points.length) {
+      this.lastPoint = points[points.length - 1];
     }
   }
 
-  private prepare(point: RawPointType): PointType {
-    return {
-      values: {
-        x: point.x,
-        y: point.y,
-      },
-      coordinates: {
-        x: this.xAxis.scale.scale(point.x),
-        y: this.yAxis.scale.invert(point.x),
-      },
-    };
+  addPoint(point: PointType): void {
+    this.points.push(point);
+    if (!this.lastPoint || point.x >= this.lastPoint.x) {
+      this.lastPoint = point;
+    }
   }
 }

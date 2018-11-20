@@ -19,3 +19,9 @@ export type OptionsType = {
     color: string;
   };
 };
+
+
+export type LastDrawedType = {
+  domain: [number, number],
+  range: [number, number]
+}

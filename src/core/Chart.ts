@@ -23,7 +23,7 @@ export class Chart {
     this.platform = new Platform(ctx);
     this.axes = new Axes(canvas, this.platform, this.viewArea);
     // type
-    this.type = new LineType(ctx);
+    this.type = new LineType(ctx, this.axes.xAxis, this.axes.yAxis);
   }
 
   setSize(width: number, height: number): void {
@@ -55,13 +55,10 @@ export class Chart {
     this.platform.clear();
 
     // scale points to range
-    const scaledPoints = this.visiblePoints.map(point => ({
-      y: this.axes.yAxis.scale.invert(point.y),
-      x: this.axes.xAxis.scale.scale(point.x),
-    }));
+
 
     // test
-    this.type.setPoints(scaledPoints);
+    this.type.setPoints(this.visiblePoints);
 
     // yScale
     this.axes.draw();

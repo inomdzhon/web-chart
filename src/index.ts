@@ -5,7 +5,7 @@ import { Chart } from "./core";
 import { Point } from "./Point";
 
 // utils
-import { debounce, ts } from "./utils";
+import { debounce, now } from "./utils";
 
 export class Application {
   start(canvasId: string): void {
@@ -36,8 +36,8 @@ export class Application {
 
     // add new point every seconds
     setInterval(() => {
-      chart.addPoint(point.single(ts()));
-    }, 1000);
+      chart.addPoint(point.single(now()));
+    }, 500);
 
     function loop(): void {
       chart.update();

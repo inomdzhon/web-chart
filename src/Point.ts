@@ -1,4 +1,4 @@
-import { random, ts } from "utils";
+import { now } from "utils";
 
 type PointType = {
   x: number;
@@ -6,38 +6,17 @@ type PointType = {
 };
 
 export class Point {
-  single(ts: number): PointType {
-    const generateDomain = [-3, 3];
-    if (ts % 8) {
-      generateDomain[0] = -1;
-    } else if (ts % 6) {
-      generateDomain[0] = -3;
-    } else if (ts % 4) {
-      generateDomain[0] = -4;
-    } else if (ts % 2) {
-      generateDomain[0] = -2;
-    }
-
-    if (ts % 3) {
-      generateDomain[1] = 2;
-    } else if (ts % 5) {
-      generateDomain[1] = 5;
-    } else if (ts % 7) {
-      generateDomain[1] = 3;
-    } else if (ts % 9) {
-      generateDomain[1] = 1;
-    }
-
+  single(tsMs: number): PointType {
     return {
-      x: ts * 1000,
-      y: random(generateDomain[0], generateDomain[1]),
+      x: tsMs,
+      y: Math.random(),
     };
   }
 
   array(count: number = 100): PointType[] {
-    const now = ts();
+    const nowMs = now();
     const points: PointType[] = [];
-    for (let i = now - count; i < now; i += 1) {
+    for (let i = nowMs - count * 1000; i < nowMs; i += 500) {
       points.push(this.single(i));
     }
     return points;

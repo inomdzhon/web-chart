@@ -6,7 +6,7 @@ import { Pan } from "./pan";
 import { Axis } from "./axis";
 
 // types
-import { extent, now, pad2 } from "utils";
+import { extent, now } from "utils";
 
 export class Axes {
   xAxis: Axis;
