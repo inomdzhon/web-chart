@@ -1,4 +1,5 @@
-import { Platform, PointType } from "platform";
+import { DrawBus } from "drawBus";
+import { PointType } from "core";
 import { ViewArea } from "../core/ViewArea";
 
 import { Zoom } from "./zoom";
@@ -18,11 +19,11 @@ export class Axes {
 
   constructor(
     private canvas: HTMLCanvasElement,
-    private platform: Platform,
+    private drawBus: DrawBus,
     private viewArea: ViewArea,
   ) {
-    this.xAxis = new Axis("linear", "bottom", platform, this.viewArea);
-    this.yAxis = new Axis("linear", "right", platform, this.viewArea);
+    this.xAxis = new Axis("linear", "bottom", drawBus, this.viewArea);
+    this.yAxis = new Axis("linear", "right", drawBus, this.viewArea);
 
     // init axes Zoom
     this.zoom = new Zoom(canvas, {

@@ -1,3 +1,5 @@
+import { DrawBus } from 'drawBus'
+
 // types
 import { PointType, LineAttributesType } from "./typing/types";
 
@@ -11,14 +13,14 @@ export class LineType {
   private interpolator: Interpolator = new Interpolator();
 
   constructor(
-    private ctx: CanvasRenderingContext2D,
+    private drawBus: DrawBus,
     private xAxis: Axis,
     private yAxis: Axis,
   ) {}
 
   setPoints(points: PointType[]): void {
     this.lines = this.prepare(points);
-    // this.draw();
+    this.draw();
   }
 
   private prepare(points: PointType[]): LineAttributesType[] {
@@ -61,11 +63,18 @@ export class LineType {
   }
 
   private drawLine(from: PointType, to: PointType): void {
-    this.ctx.beginPath();
-    this.ctx.strokeStyle = "rgba(76,117,163 ,1 )";
-    this.ctx.lineWidth = 2;
-    this.ctx.moveTo(from.x, from.y);
-    this.ctx.lineTo(to.x, to.y);
-    this.ctx.stroke();
+    this.drawBus.add({
+      type: "line",
+      position: {
+        x1: from.x,
+        y1: from.y,
+        x2: to.x,
+        y2: to.y,
+      },
+      style: {
+        color: "rgba(76,117,163 ,1 )",
+        width: 2,
+      },
+    });
   }
 }

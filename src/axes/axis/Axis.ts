@@ -4,9 +4,8 @@ import {
   AxisTypeType,
   ScaleType,
   OptionsType,
-  LastDrawedType,
 } from "./typing/types";
-import { Platform } from "platform";
+import { DrawBus } from "drawBus";
 
 import { linear } from "./linear";
 import { ViewArea } from "core/ViewArea";
@@ -15,7 +14,7 @@ import { pad2 } from "utils";
 export class Axis {
   domain: [number, number] = [0, 0];
   range: [number, number] = [0, 0];
-  scale: ScaleType;
+  scale!: ScaleType;
 
   options: OptionsType = {
     label: {
@@ -28,25 +27,19 @@ export class Axis {
     },
   };
 
-  private lastDrawed?: LastDrawedType;
-
   constructor(
     private type: AxisTypeType,
     private position: AxisPositionType,
-    private platform: Platform,
+    private drawBus: DrawBus,
     private viewArea: ViewArea,
   ) {
-    switch (type) {
-      case "linear":
-      default:
-        this.scale = linear(this.domain, this.range);
-    }
+    this.updateScale();
   }
 
   update(domain: [number, number], range: [number, number]): void {
     this.domain = domain;
     this.range = range;
-    this.scale = linear(this.domain, this.range);
+    this.updateScale();
   }
 
   draw(): void {
@@ -57,25 +50,32 @@ export class Axis {
       case "right": {
         for (let i = 0; i < ticks.length; i += 1) {
           const y = this.scale.invert(ticks[i]);
-          this.platform.line(
-            { y, x: this.viewArea.content.margin.left },
-            { y, x: this.viewArea.width - this.viewArea.scales.yScale.width },
-            {
+          this.drawBus.add({
+            type: "line",
+            position: {
+              x1: this.viewArea.content.margin.left,
+              y1: y,
+              x2: this.viewArea.width - this.viewArea.scales.yScale.width,
+              y2: y,
+            },
+            style: {
               color,
               dash,
               width: 1,
             },
-          );
-
-          this.platform.fillText(
-            ticks[i],
-            this.viewArea.width - this.viewArea.scales.yScale.width + 15,
-            y + 3,
-            {
+          });
+          this.drawBus.add({
+            type: "text",
+            value: ticks[i],
+            position: {
+              x: this.viewArea.width - this.viewArea.scales.yScale.width + 15,
+              y: y + 3,
+            },
+            style: {
               color: this.options.label.color,
               font: this.options.label.font,
             },
-          );
+          });
         }
 
         break;
@@ -87,53 +87,58 @@ export class Axis {
             dash = [];
           }
           const x = this.scale.scale(ticks[i]);
-          this.platform.line(
-            { x, y: this.viewArea.content.margin.top },
-            { x, y: this.viewArea.height - this.viewArea.scales.xScale.height },
-            {
-              width: 1,
-              color: this.options.grid.color,
-              dash: [5],
-            },
-          );
           const date = new Date(ticks[i]);
-          this.platform.fillText(
-            this.formatTime(date),
-            x - 20,
-            this.viewArea.height +
-              this.viewArea.content.margin.top +
-              this.viewArea.content.margin.bottom -
-              this.viewArea.scales.xScale.height,
-            {
+
+          this.drawBus.add({
+            type: "line",
+            position: {
+              x1: x,
+              y1: this.viewArea.content.margin.top,
+              x2: x,
+              y2: this.viewArea.height - this.viewArea.scales.xScale.height,
+            },
+            style: {
+              color,
+              dash: [5],
+              width: 1,
+            },
+          });
+          this.drawBus.add({
+            type: "text",
+            value: this.formatTime(date),
+            position: {
+              x: x - 20,
+              y:
+                this.viewArea.height +
+                this.viewArea.content.margin.top +
+                this.viewArea.content.margin.bottom -
+                this.viewArea.scales.xScale.height,
+            },
+            style: {
               color: this.options.label.color,
               font: this.options.label.font,
             },
-          );
+          });
         }
       }
     }
-    this.lastDrawed = {
-      domain: [...this.domain] as [number, number],
-      range: [...this.range] as [number, number],
-    };
-  }
-
-  private needReDraw(): boolean {
-    if (!this.lastDrawed) {
-      return true;
-    }
-
-    return (
-      this.domain[0] !== this.lastDrawed.domain[0] ||
-      this.domain[1] !== this.lastDrawed.domain[1] ||
-      this.range[0] !== this.lastDrawed.range[0] ||
-      this.range[1] !== this.lastDrawed.range[1]
-    );
   }
 
   private formatTime(date: Date): string {
     return `${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(
       date.getSeconds(),
     )}`;
+  }
+
+  private updateScale(): void {
+    switch (this.type) {
+      case "linear":
+      default:
+        this.scale = linear(
+          this.domain,
+          this.range,
+          this.position !== "bottom",
+        );
+    }
   }
 }

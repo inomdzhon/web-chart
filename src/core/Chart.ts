@@ -1,14 +1,17 @@
-import { Platform, PointType } from "platform";
+import { Axes } from "axes";
+import { DrawBus } from "drawBus";
 import { ViewArea } from "./ViewArea";
+
+// utils
 import { throttle } from "utils";
 
-// core
-import { Axes } from "axes";
+// types
+import { PointType } from './typing/types';
 
 import { LineType } from "type/LineType";
 
 export class Chart {
-  private readonly platform: Platform;
+  private readonly drawBus: DrawBus;
   private readonly axes: Axes;
 
   private points: PointType[] = [];
@@ -16,20 +19,30 @@ export class Chart {
   private viewArea: ViewArea = new ViewArea();
   private type: LineType;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(private canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       throw new Error("canvas context not found");
     }
-    this.platform = new Platform(ctx);
-    this.axes = new Axes(canvas, this.platform, this.viewArea);
+    this.drawBus = new DrawBus(ctx);
+    this.axes = new Axes(canvas, this.drawBus, this.viewArea);
+
     // type
-    this.type = new LineType(ctx, this.axes.xAxis, this.axes.yAxis);
+    this.type = new LineType(this.drawBus, this.axes.xAxis, this.axes.yAxis);
     this.updateVisiblePoints = throttle(this.updateVisiblePoints, 500, this);
   }
 
   setSize(width: number, height: number): void {
-    this.platform.setSize(width, height);
+    if (window.devicePixelRatio) {
+      this.canvas.style.width = `${width}px`;
+      this.canvas.style.height = `${height}px`;
+      this.canvas.height = height * window.devicePixelRatio;
+      this.canvas.width = width * window.devicePixelRatio;
+      const ctx = this.canvas.getContext("2d");
+      if (ctx) {
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      }
+    }
     this.viewArea.update(width, height);
     if (this.visiblePoints.length !== 0) {
       this.draw();
@@ -54,8 +67,7 @@ export class Chart {
   }
 
   private draw(): void {
-    this.platform.clear();
-
+    this.drawBus.clear();
     // scale points to range
 
     // test
@@ -63,6 +75,7 @@ export class Chart {
 
     // yScale
     this.axes.draw();
+    this.drawBus.commit();
   }
 
   private updateVisiblePoints(): void {

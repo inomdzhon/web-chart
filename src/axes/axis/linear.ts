@@ -4,6 +4,7 @@ import { niceNumber } from "../utils";
 export function linear(
   domain: [number, number],
   range: [number, number],
+  cap: boolean = true,
 ): ScaleType {
   const domainDiff = domain[1] - domain[0];
   const rangeDiff = range[1] - range[0];
@@ -19,7 +20,7 @@ export function linear(
       return range[0];
     }
     const result = range[0] + ratio * (value - domain[0]);
-    return Math.min(range[1], Math.max(range[0], result));
+    return cap ? Math.min(range[1], Math.max(range[0], result)) : result;
   }
 
   function invert(value: number): number {
@@ -27,7 +28,7 @@ export function linear(
       return range[0];
     }
     const result = range[0] + (rangeDiff - ratio * (value - domain[0]));
-    return Math.min(range[1], Math.max(range[0], result));
+    return cap ? Math.min(range[1], Math.max(range[0], result)): result;
   }
 
   function ticks(count: number = 10): number[] {

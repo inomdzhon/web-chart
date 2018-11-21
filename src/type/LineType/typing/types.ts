@@ -8,10 +8,3 @@ export type LineAttributesType = {
   from: PointType;
   to: PointType;
 };
-
-export type LineOptionsType = {
-  width: number;
-  color: string;
-  cap?: "butt" | "round" | "square";
-  dash?: number[];
-};
