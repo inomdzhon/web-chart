@@ -1,5 +1,5 @@
 // types
-import { ZoomType } from './typing/types';
+import { ZoomType } from "./typing/types";
 
 export class Zoom {
   constructor(private canvas: HTMLCanvasElement, public domain: ZoomType) {

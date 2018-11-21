@@ -3,13 +3,13 @@ export type PointType = {
   y: number;
 };
 
-export type LineShapeAttributesType = {
+export type LineAttributesType = {
   id: number;
   from: PointType;
   to: PointType;
 };
 
-export type LineShapeOptionsType = {
+export type LineOptionsType = {
   width: number;
   color: string;
   cap?: "butt" | "round" | "square";

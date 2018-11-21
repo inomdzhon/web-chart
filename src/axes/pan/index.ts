@@ -1,1 +1,1 @@
-export { Pan } from './Pan';
+export { Pan } from "./Pan";

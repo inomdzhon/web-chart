@@ -1,5 +1,5 @@
 // types
-export * from './typing/types';
+export * from "./typing/types";
 
-export { Layer } from './Layer';
-export { Shape } from './Shape';
+export { Layer } from "./Layer";
+export { Shape } from "./Shape";

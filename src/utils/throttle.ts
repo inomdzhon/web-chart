@@ -1,4 +1,8 @@
-export function throttle(func: () => void, ms: number, context: any): () => void {
+export function throttle(
+  func: () => void,
+  ms: number,
+  context: any,
+): () => void {
   let isThrottled = false;
   let savedArgs;
 

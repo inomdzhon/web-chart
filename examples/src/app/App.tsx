@@ -11,7 +11,7 @@ const webGLApplication = new WebGLApplication();
 export default class App extends React.Component {
 
   componentDidMount(): void {
-    webGLApplication.start("chart");
+    application.start("chart");
   }
 
   render(): React.ReactNode {

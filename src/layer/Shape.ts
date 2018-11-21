@@ -1,5 +1,5 @@
 // types
-import { IdType } from './typing/types';
+import { IdType } from "./typing/types";
 
 export abstract class Shape<T extends { id: IdType }> {
   attributes: T;
@@ -27,7 +27,10 @@ export abstract class Shape<T extends { id: IdType }> {
   update(attributes: T): void {
     this.previousAttributes = this.attributes;
     this.attributes = this.parse(attributes);
-    const changes = this.calculateChanges(this.attributes, this.previousAttributes);
+    const changes = this.calculateChanges(
+      this.attributes,
+      this.previousAttributes,
+    );
     if (changes) {
       this.onChange(changes);
     }
@@ -40,14 +43,20 @@ export abstract class Shape<T extends { id: IdType }> {
     return attributes;
   }
 
-  private calculateChanges(attributes: T, previousAttributes: T): Partial<T> | null {
+  private calculateChanges(
+    attributes: T,
+    previousAttributes: T,
+  ): Partial<T> | null {
     let isDirty: boolean = false;
     const changes: Partial<T> = {};
     const attributesKeys = Object.keys(attributes);
     let currentAttributesKey;
     for (let i = 0; i < attributesKeys.length; i += 1) {
       currentAttributesKey = attributesKeys[i];
-      if (previousAttributes[currentAttributesKey] !== attributes[currentAttributesKey]) {
+      if (
+        previousAttributes[currentAttributesKey] !==
+        attributes[currentAttributesKey]
+      ) {
         changes[currentAttributesKey] = attributes[currentAttributesKey];
         isDirty = true;
       }

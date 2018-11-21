@@ -1,4 +1,4 @@
 // types
-export * from './typing/types';
+export * from "./typing/types";
 
-export { Zoom } from './Zoom';
+export { Zoom } from "./Zoom";

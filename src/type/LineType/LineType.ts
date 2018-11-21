@@ -1,53 +1,28 @@
 // types
-import { PointType, LineShapeAttributesType } from "./typing/types";
+import { PointType, LineAttributesType } from "./typing/types";
 
-import { Line } from './Line';
 import { Axis } from "axes/axis";
 
-type HashType = {
-  [key: string]: number;
-};
+// interpolator
+import { Interpolator } from './Interpolator';
 
 export class LineType {
-  private lines: Line[] = [];
-  private hash: HashType = {};
+  private lines: LineAttributesType[] = [];
+  private interpolator: Interpolator = new Interpolator();
 
-  constructor(private ctx: CanvasRenderingContext2D, private xAxis: Axis, private yAxis: Axis) {
-  }
+  constructor(
+    private ctx: CanvasRenderingContext2D,
+    private xAxis: Axis,
+    private yAxis: Axis,
+  ) {}
 
   setPoints(points: PointType[]): void {
-   this.update(this.prepare(points));
-   this.draw();
+    this.lines = this.prepare(points);
+    // this.draw();
   }
 
-  private getById(id: number): Line | null {
-    return this.lines[this.hash[id]] || null;
-  }
-
-  private update(lines: LineShapeAttributesType[]): void {
-    const newHash: HashType = {};
-    const newLines: Line[] = [];
-
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      newHash[line.id] = i;
-      const origin = this.getById(line.id);
-      if (origin) {
-        origin.update(line);
-        newLines.push(origin);
-      } else {
-        const shape = new Line(line, this.ctx);
-        newLines.push(shape);
-      }
-    }
-
-    // commit changes
-    this.lines = newLines;
-    this.hash = newHash;
-  }
-
-  private prepare(points: PointType[]): LineShapeAttributesType[] {
-    const result: LineShapeAttributesType[] = [];
+  private prepare(points: PointType[]): LineAttributesType[] {
+    const result: LineAttributesType[] = [];
     let from: PointType;
     let to: PointType;
     for (let i = 0; i < points.length; i += 1) {
@@ -75,9 +50,22 @@ export class LineType {
     if (!this.lines.length) {
       return;
     }
+    let currentLine: LineAttributesType;
     for (let i = 0; i < this.lines.length - 1; i += 1) {
-      this.lines[i].draw();
+      currentLine = this.lines[i];
+      this.drawLine(currentLine.from, currentLine.to);
     }
-    this.lines[this.lines.length - 1].transition();
+    const lastLine: LineAttributesType = this.lines[this.lines.length - 1];
+    const lastLineTo = this.interpolator.fromTo(lastLine.id, lastLine.from, lastLine.to, 400);
+    this.drawLine(lastLine.from, lastLineTo);
+  }
+
+  private drawLine(from: PointType, to: PointType): void {
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = "rgba(76,117,163 ,1 )";
+    this.ctx.lineWidth = 2;
+    this.ctx.moveTo(from.x, from.y);
+    this.ctx.lineTo(to.x, to.y);
+    this.ctx.stroke();
   }
 }

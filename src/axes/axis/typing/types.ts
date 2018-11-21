@@ -20,8 +20,7 @@ export type OptionsType = {
   };
 };
 
-
 export type LastDrawedType = {
-  domain: [number, number],
-  range: [number, number]
-}
+  domain: [number, number];
+  range: [number, number];
+};

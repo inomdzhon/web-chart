@@ -58,7 +58,6 @@ export class Chart {
 
     // scale points to range
 
-
     // test
     this.type.setPoints(this.visiblePoints);
 
@@ -72,6 +71,5 @@ export class Chart {
         point.x <= this.axes.xAxis.domain[1] &&
         point.x >= this.axes.xAxis.domain[0],
     );
-
   }
 }

@@ -17,10 +17,10 @@ export class Pan {
     window.addEventListener("resize", this.reOffset);
 
     // listen for mouse events
-    canvas.addEventListener('mousedown', this.handleMouseDown);
-    canvas.addEventListener('mousemove', this.handleMouseMove);
-    canvas.addEventListener('mouseup', this.handleMouseUp);
-    canvas.addEventListener('mouseout', this.handleMouseOut);
+    canvas.addEventListener("mousedown", this.handleMouseDown);
+    canvas.addEventListener("mousemove", this.handleMouseMove);
+    canvas.addEventListener("mouseup", this.handleMouseUp);
+    canvas.addEventListener("mouseout", this.handleMouseOut);
     this.reOffset();
   }
 
@@ -29,7 +29,7 @@ export class Pan {
   }
 
   private handleMouseDown(event: MouseEvent): void {
-    this.canvas.style.cursor = 'move';
+    this.canvas.style.cursor = "move";
     // tell the browser we're handling this event
     event.preventDefault();
     event.stopPropagation();
@@ -51,12 +51,11 @@ export class Pan {
 
     // clear the isDragging flag
     this.isDown = false;
-    this.canvas.style.cursor = '';
+    this.canvas.style.cursor = "";
   }
 
-
   private handleMouseMove(event: MouseEvent): void {
-  // only do this code if the mouse is being dragged
+    // only do this code if the mouse is being dragged
     if (!this.isDown) {
       return;
     }
