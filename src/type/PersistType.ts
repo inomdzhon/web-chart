@@ -3,6 +3,7 @@ import { DrawBus } from "drawBus";
 // types
 import { PointType } from "core";
 import { Axis } from "axes/axis";
+import { roundFloat } from "utils";
 
 type PreviousType = {
   points: PointType[];
@@ -45,6 +46,7 @@ export abstract class PersistType {
     if (this.previous.xDomain) {
       const diff = this.xAxis.scale.scale(this.xAxis.domain[1]) - this.xAxis.scale.scale(this.previous.xDomain[1]);
       this.xScaleOffset -= diff;
+      this.xScaleOffset = roundFloat(this.xScaleOffset, 1000)
     }
 
     this.previous.points = points;
@@ -55,7 +57,7 @@ export abstract class PersistType {
     if (this.persistCanvas.width === 0 || this.persistCanvas.height === 0) {
       return;
     }
-
+    console.log(this.xScaleOffset);
     this.drawBus.add({
       type: "image",
       value: this.persistCanvas,
@@ -70,7 +72,8 @@ export abstract class PersistType {
     const canvas = document.createElement("canvas");
     this.persistCanvas = canvas;
     canvas.style.position = "fixed";
-    canvas.style.left = "-100%";
+    canvas.style.top = "0";
+    canvas.style.left = "-200vw";
     canvas.style.background = "#000";
     canvas.style.zIndex = "100";
     document.body.appendChild(canvas);

@@ -1,5 +1,6 @@
 import { ScaleType } from "./typing/types";
 import { niceNumber } from "../utils";
+import { roundFloat } from "utils";
 
 export function linear(
   domain: [number, number],
@@ -19,7 +20,8 @@ export function linear(
     if (isEqual) {
       return range[0];
     }
-    const result = range[0] + ratio * (value - domain[0]);
+    let result = range[0] + ratio * (value - domain[0]);
+    result = roundFloat(result, 1000);
     return cap ? Math.min(range[1], Math.max(range[0], result)) : result;
   }
 
@@ -27,7 +29,8 @@ export function linear(
     if (isEqual) {
       return range[0];
     }
-    const result = range[0] + (rangeDiff - ratio * (value - domain[0]));
+    let result = range[0] + (rangeDiff - ratio * (value - domain[0]));
+    result = roundFloat(result, 1000);
     return cap ? Math.min(range[1], Math.max(range[0], result)): result;
   }
 

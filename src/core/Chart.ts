@@ -17,6 +17,8 @@ export class Chart {
   private viewArea: ViewArea = new ViewArea();
   private type: LineType;
 
+  private filterDomainCorrection: number = 5000;
+
   constructor(private canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
     if (!ctx) {
@@ -79,7 +81,7 @@ export class Chart {
     this.visiblePoints = this.points.filter(
       point =>
         point.x <= this.axes.xAxis.domain[1] &&
-        point.x >= this.axes.xAxis.domain[0],
+        point.x >= (this.axes.xAxis.domain[0] - this.filterDomainCorrection),
     );
   }
 }

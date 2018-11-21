@@ -4,8 +4,7 @@ import { CommandType } from "./typing/types";
 export class DrawBus {
   private queue: CommandType[] = [];
 
-  constructor(private ctx: CanvasRenderingContext2D) {
-  }
+  constructor(private ctx: CanvasRenderingContext2D) {}
 
   add(command: CommandType): void {
     this.queue.push(command);
