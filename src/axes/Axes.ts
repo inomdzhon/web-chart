@@ -3,7 +3,7 @@ import { PointType } from "core";
 import { ViewArea } from "../core/ViewArea";
 
 import { Zoom } from "./zoom";
-import { Pan } from "./pan";
+import { Pan, InfoType } from "./pan";
 import { Axis } from "./axis";
 
 // types
@@ -27,15 +27,17 @@ export class Axes {
 
     // init axes Zoom
     this.zoom = new Zoom(canvas, {
-      diff: 1000 * 60 * 2,
-      minDiff: 1000 * 30,
-      maxDiff: 1000 * 60 * 60,
+      domain: {
+        defaultDiff: 1000 * 60 * 2,
+        minDiff: 1000 * 30,
+        maxDiff: 1000 * 60 * 60,
+      },
     });
 
     // init Axes Pan
     this.pan = new Pan(canvas);
-    this.handlePan = this.handlePan.bind(this);
-    this.pan.onPan(this.handlePan);
+    this.updateXAxisByPan = this.updateXAxisByPan.bind(this);
+    this.pan.onPan(this.updateXAxisByPan);
   }
 
   updateAxis(points: PointType[]): void {
@@ -61,12 +63,25 @@ export class Axes {
     this.xAxis.update(domain, range);
   }
 
-  updateXAxisByPan(pan: number): void {
+  updateYAxis(points: PointType[]): void {
+    const domain: [number, number] = extent(points, point => point.y);
+    const range: [number, number] = [
+      this.viewArea.content.margin.top,
+      this.viewArea.content.height + this.viewArea.content.margin.top,
+    ];
+    this.yAxis.update(domain, range);
+  }
+
+  draw(): void {
+    this.xAxis.draw();
+    this.yAxis.draw();
+  }
+
+  private updateXAxisByPan(info: InfoType): void {
     const nowMilliseconds = now();
     let domain: [number, number] = this.xAxis.domain;
-    const direction: "left" | "right" = pan > 0 ? "left" : "right";
-    const domainChange = Math.abs(pan) * 100;
-    switch (direction) {
+    const domainChange = info.x.diff * 100 * this.zoom.domain.k;
+    switch (info.x.direction) {
       case "left":
         domain = [
           this.xAxis.domain[0] - domainChange,
@@ -91,23 +106,5 @@ export class Axes {
       this.viewArea.content.width + this.viewArea.content.margin.left,
     ];
     this.xAxis.update(domain, range);
-  }
-
-  updateYAxis(points: PointType[]): void {
-    const domain: [number, number] = extent(points, point => point.y);
-    const range: [number, number] = [
-      this.viewArea.content.margin.top,
-      this.viewArea.content.height + this.viewArea.content.margin.top,
-    ];
-    this.yAxis.update(domain, range);
-  }
-
-  draw(): void {
-    this.xAxis.draw();
-    this.yAxis.draw();
-  }
-
-  private handlePan(dx: number): void {
-    this.updateXAxisByPan(dx);
   }
 }

@@ -1,3 +1,6 @@
+// types
+import { InfoType } from "./typing/types";
+
 export class Pan {
   private offsetX: number = 0;
   private offsetY: number = 0;
@@ -5,7 +8,7 @@ export class Pan {
   private startY: number = 0;
   private isDown: boolean = false;
 
-  listeners: ((dx: number, dy: number) => void)[] = [];
+  listeners: ((info: InfoType) => void)[] = [];
 
   constructor(private canvas: HTMLCanvasElement) {
     this.reOffset = this.reOffset.bind(this);
@@ -24,7 +27,7 @@ export class Pan {
     this.reOffset();
   }
 
-  onPan(callback: (dx: number, dy: number) => void): void {
+  onPan(callback: (info: InfoType) => void): void {
     this.listeners.push(callback);
   }
 
@@ -73,7 +76,7 @@ export class Pan {
     const dy = mouseY - this.startY;
     this.startX = mouseX;
     this.startY = mouseY;
-    this.listeners.forEach(listener => listener(dx, dy));
+    this.listeners.forEach(listener => listener(this.createInfo(dx)));
   }
 
   private handleMouseOut(event: MouseEvent): void {
@@ -89,5 +92,15 @@ export class Pan {
     const { left, top } = this.canvas.getBoundingClientRect();
     this.offsetX = left;
     this.offsetY = top;
+  }
+
+  private createInfo(dx: number): InfoType {
+    const direction = dx > 0 ? "left" : "right";
+    return {
+      x: {
+        direction,
+        diff: Math.abs(dx),
+      },
+    };
   }
 }

@@ -81,6 +81,7 @@ export class Axis {
         break;
       }
       case "bottom": {
+        const tickDiff = ticks.length > 1 ? ticks[1] - ticks[0] : 1;
         for (let i = 1; i < ticks.length - 1; i += 1) {
           if (ticks[i] === 0) {
             color = this.options.grid.colorAtZero;
@@ -105,7 +106,7 @@ export class Axis {
           });
           this.drawBus.add({
             type: "text",
-            value: this.formatTime(date),
+            value: this.formatTime(date, tickDiff),
             position: {
               x: x - 20,
               y:
@@ -124,10 +125,14 @@ export class Axis {
     }
   }
 
-  private formatTime(date: Date): string {
+  private formatTime(date: Date, tickDiff: number): string {
+    if (tickDiff > 60000) {
+      return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+    }
     return `${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(
       date.getSeconds(),
     )}`;
+
   }
 
   private updateScale(): void {
