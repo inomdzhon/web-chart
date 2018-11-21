@@ -7,11 +7,12 @@ export class DrawBus {
   constructor(private ctx: CanvasRenderingContext2D) {
   }
 
-  clear(): void {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  add(command: CommandType): void {
+    this.queue.push(command);
   }
 
   commit(): void {
+    this.clear();
     let currentCommand: CommandType;
     for (let i = 0; i < this.queue.length; i += 1) {
       currentCommand = this.queue[i];
@@ -55,12 +56,18 @@ export class DrawBus {
           this.ctx.fillStyle = prevFill;
           break;
         }
+        case "image": {
+          this.ctx.drawImage(currentCommand.value, currentCommand.position.x, currentCommand.position.y);
+          break;
+        }
+
+
       }
     }
     this.queue = [];
   }
 
-  add(command: CommandType): void {
-    this.queue.push(command);
+  private clear(): void {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
   }
 }

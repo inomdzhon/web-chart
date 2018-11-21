@@ -12,6 +12,16 @@ export type TextCommandType = {
   };
 };
 
+export type ImageCommandType = {
+  type: "image";
+  value: CanvasImageSource,
+  position: {
+    x: number;
+    y: number;
+  };
+};
+
+
 export type LineCommandType = {
   type: "line";
   position: {
@@ -27,4 +37,4 @@ export type LineCommandType = {
   };
 };
 
-export type CommandType = TextCommandType | LineCommandType;
+export type CommandType = TextCommandType | LineCommandType | ImageCommandType;

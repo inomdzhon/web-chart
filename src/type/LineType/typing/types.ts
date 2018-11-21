@@ -1,7 +1,4 @@
-export type PointType = {
-  x: number;
-  y: number;
-};
+import { PointType } from 'core';
 
 export type LineAttributesType = {
   id: number;

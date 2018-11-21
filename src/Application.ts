@@ -32,7 +32,7 @@ export class Application {
 
     chart.setSize(width, height);
 
-    chart.setPoints(point.array(1000));
+    chart.setPoints(point.array(10000));
 
     // add new point every seconds
     setInterval(() => {

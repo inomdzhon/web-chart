@@ -1,6 +1,6 @@
 import { now } from "utils";
 
-import { PointType } from "./typing/types";
+import { PointType } from "core";
 
 export class Interpolator {
   id: number = 0;

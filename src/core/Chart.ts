@@ -2,8 +2,6 @@ import { Axes } from "axes";
 import { DrawBus } from "drawBus";
 import { ViewArea } from "./ViewArea";
 
-// utils
-import { throttle } from "utils";
 
 // types
 import { PointType } from './typing/types';
@@ -29,7 +27,6 @@ export class Chart {
 
     // type
     this.type = new LineType(this.drawBus, this.axes.xAxis, this.axes.yAxis);
-    this.updateVisiblePoints = throttle(this.updateVisiblePoints, 500, this);
   }
 
   setSize(width: number, height: number): void {
@@ -67,11 +64,11 @@ export class Chart {
   }
 
   private draw(): void {
-    this.drawBus.clear();
     // scale points to range
 
     // test
     this.type.setPoints(this.visiblePoints);
+    this.type.draw();
 
     // yScale
     this.axes.draw();
